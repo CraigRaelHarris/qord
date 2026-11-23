@@ -50,7 +50,7 @@ public class CliAppTests : IDisposable
     public void Render_WritesPngByDefault()
     {
         string path = Path.Combine(_directory, "out.png");
-        (int exit, string output, string error) = Run("render", "Cmaj", "--out", path);
+        (int exit, string output, string error) = Run("render", "Cmaj", "--visual", "traditional", "--out", path);
         Assert.Equal(0, exit);
         Assert.True(File.Exists(path));
         Assert.Contains("Wrote", output);
@@ -66,7 +66,7 @@ public class CliAppTests : IDisposable
     public void Render_WritesSvgWithFormatFlag()
     {
         string path = Path.Combine(_directory, "out.svg");
-        (int exit, string output, string error) = Run("render", "F#maj", "--format", "svg", "--out", path);
+        (int exit, string output, string error) = Run("render", "F#maj", "--format", "svg", "--visual", "traditional", "--out", path);
         Assert.Equal(0, exit);
         Assert.StartsWith("<svg", File.ReadAllText(path));
     }
@@ -75,7 +75,7 @@ public class CliAppTests : IDisposable
     public void Render_RespectsOctaveAndLayoutFlags()
     {
         string path = Path.Combine(_directory, "out.svg");
-        (int exit, string output, string error) = Run("render", "Cmaj", "--octave", "-1", "--layout", "F", "--format", "svg", "--out", path);
+        (int exit, string output, string error) = Run("render", "Cmaj", "--octave", "-1", "--layout", "F", "--format", "svg", "--visual", "traditional", "--out", path);
         Assert.Equal(0, exit);
         Assert.Contains("C3 E3 G3", output);
     }
@@ -122,6 +122,58 @@ public class CliAppTests : IDisposable
         Assert.Equal(1, exit);
         Assert.Contains("not a valid chord encoding", error);
         Assert.False(File.Exists(LibraryPath));
+    }
+
+    [Fact]
+    public void Render_DefaultsToQadroVisual()
+    {
+        string path = Path.Combine(_directory, "default.png");
+        (int exit, string output, string error) = Run("render", "Cmaj", "--out", path);
+        Assert.Equal(0, exit);
+        Assert.Equal("", error);
+        Assert.True(File.Exists(path));
+
+        byte[] header = new byte[4];
+        using (FileStream stream = File.OpenRead(path))
+            stream.ReadExactly(header);
+        Assert.Equal(0x89, header[0]);
+    }
+
+    [Fact]
+    public void Render_QadroVisual_Succeeds()
+    {
+        string path = Path.Combine(_directory, "qadro.svg");
+        (int exit, string output, string error) = Run("render", "F#maj", "--visual", "qadro", "--format", "svg", "--out", path);
+        Assert.Equal(0, exit);
+        Assert.StartsWith("<svg", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void Render_QadroAm6ExampleOctaveDown()
+    {
+        string path = Path.Combine(_directory, "am6.svg");
+        (int exit, string output, string error) = Run("render", "Am6", "--octave", "-1", "--format", "svg", "--out", path);
+        Assert.Equal(0, exit);
+        string svg = File.ReadAllText(path);
+        Assert.Contains(">-1</text>", svg);
+        Assert.Contains("A2 C3 E3 F#3", output);
+    }
+
+    [Fact]
+    public void Render_TraditionalVisual_StillRenders()
+    {
+        string path = Path.Combine(_directory, "traditional.png");
+        (int exit, string output, string error) = Run("render", "Cmaj", "--visual", "traditional", "--out", path);
+        Assert.Equal(0, exit);
+        Assert.True(File.Exists(path));
+    }
+
+    [Fact]
+    public void Render_InvalidVisualFails()
+    {
+        (int exit, string output, string error) = Run("render", "Cmaj", "--visual", "fancy");
+        Assert.Equal(1, exit);
+        Assert.Contains("not a valid visual layout", error);
     }
 
     [Fact]

@@ -13,6 +13,7 @@ internal static class Palette
     public static readonly Rgb BlackKey = new(0x17, 0x17, 0x17);
     public static readonly Rgb WhiteKeyUsed = new(0xA9, 0xCD, 0xF0);
     public static readonly Rgb BlackKeyUsed = new(0x2E, 0x86, 0xDE);
+    public static readonly Rgb QadroLine = new(0x8C, 0x8C, 0x8C);
 
     public static Rgb FillOf(KeyBox key) => (key.IsBlack, key.IsUsed) switch
     {

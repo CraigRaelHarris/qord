@@ -61,6 +61,7 @@ public static class CliApp
         int? octave = null;
         KeyLayout? layout = null;
         ChordImageFormat format = ChordImageFormat.Png;
+        VisualLayout visual = VisualLayout.Qadro;
         string? outputPath = null;
 
         for (int i = 0; i < args.Count; i++)
@@ -89,6 +90,14 @@ public static class CliApp
                     if (formatText != "png" && formatText != "svg")
                         return Fail(stderr, $"'{args[i]}' is not a valid format (expected png or svg)");
                     format = formatText == "png" ? ChordImageFormat.Png : ChordImageFormat.Svg;
+                    break;
+                case "--visual":
+                    if (++i >= args.Count)
+                        return Fail(stderr, "--visual requires a value");
+                    string visualText = args[i].ToLowerInvariant();
+                    if (visualText != "traditional" && visualText != "qadro")
+                        return Fail(stderr, $"'{args[i]}' is not a valid visual layout (expected traditional or qadro)");
+                    visual = visualText == "traditional" ? VisualLayout.Traditional : VisualLayout.Qadro;
                     break;
                 case "--out":
                     if (++i >= args.Count)
@@ -121,7 +130,7 @@ public static class CliApp
             encoding = encoding.WithOctave(octave.Value);
 
         outputPath ??= SanitizeFileName(symbol) + ExtensionFor(format);
-        ChordRenderer.Render(encoding, outputPath, format);
+        ChordRenderer.Render(encoding, outputPath, format, visual);
         stdout.WriteLine($"Wrote {Safe(outputPath)} ({DescribeNotes(encoding)})");
         return 0;
     }
@@ -240,8 +249,8 @@ public static class CliApp
         writer.WriteLine("usage: qord <command> [options]");
         writer.WriteLine();
         writer.WriteLine("commands:");
-        writer.WriteLine("  render <symbol> [--octave N] [--layout C|F] [--format png|svg] [--out PATH]");
-        writer.WriteLine("        render the chord's keyboard image (default: png in the current directory)");
+        writer.WriteLine("  render <symbol> [--octave N] [--layout C|F] [--format png|svg] [--visual traditional|qadro] [--out PATH]");
+        writer.WriteLine("        render the chord's image (default: png, qadro visual layout, written to the current directory)");
         writer.WriteLine("  show <symbol>");
         writer.WriteLine("        print the chord's text representation and notes");
         writer.WriteLine("  list");

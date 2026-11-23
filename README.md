@@ -47,14 +47,22 @@ A C suspended 2nd (C–D–G), which spans a 7th:
 
 ## Chord library
 
-- Built-in defaults cover common chords for every root: `maj` (also the bare root, e.g. `C`), `m`, `7`, `m7`, `maj7`, `dim`, `aug`, `sus2`, `sus4` and `5`. Roots C through E use the C layout; roots F through B use the F layout.
+- Built-in defaults cover common chords for every root: `maj` (also the bare root, e.g. `C`), `m`, `7`, `m7`, `m6`, `maj7`, `dim`, `aug`, `sus2`, `sus4` and `5`. Roots C through E use the C layout; roots F through B use the F layout.
 - Your own chords are persisted in `~/.qord/chords.json` (set the `QORD_LIBRARY` environment variable to use a different file) as a map from chord symbol to the 3-number encoding. User entries override built-ins.
 - Entries whose encodings are invalid are ignored with a warning, and a file that is not valid JSON is backed up (as `chords.json.corrupt`) and ignored, so a bad library file never blocks the tool.
 - Manage entries from the CLI with `add` / `list`, or by editing the JSON file directly.
 
 ## Rendering
 
-The image is a small piano-keyboard diagram with the chord's keys highlighted. The diagram spans from the layout's **starting key** (which may itself be unused, e.g. the F in the F# example) to the chord's **highest used key**; used keys are highlighted in blue.
+Images come in two **visual layouts**, each available in both formats:
+
+- **qadro** — the default visual layout: a three-row schematic of the chord.
+  - **Top row** (only shown when the octave is not 0): the octave number centered, with an arrow beneath it — pointing left when the chord drops octaves, right when it rises. Nothing is drawn for octave 0.
+  - **Middle row** — the black keys: three circles, a gap, then two circles per octave from F; two, a gap, then three from C. Used keys are filled black; unused ones are white circles. This row always shows every circle of each spanned octave.
+  - **Bottom row** — the white keys: four circles, a gap, then three per octave from F; three, a gap, then four from C. Used keys are filled black; unused ones shrink to dots; nothing is drawn to the right of the chord's last used key.
+  - A thin vertical gray line marks each C — in the B–C gap for F-based rows, at the left edge and each octave start for C-based rows.
+  - Chords spanning more than one octave repeat the circle pattern per octave, extending to the right.
+- **traditional** — a small piano-keyboard diagram with the chord's keys highlighted. The diagram spans from the layout's **starting key** (which may itself be unused, e.g. the F in the F# example) to the chord's **highest used key**; used keys are highlighted in blue.
 
 Formats (selectable with `--format`):
 
@@ -63,7 +71,7 @@ Formats (selectable with `--format`):
 
 ## CLI usage
 
-    qord render <symbol> [--octave N] [--layout C|F] [--format png|svg] [--out PATH]
+    qord render <symbol> [--octave N] [--layout C|F] [--format png|svg] [--visual traditional|qadro] [--out PATH]
     qord show   <symbol>
     qord list
     qord add    <symbol> <encoding>
@@ -71,14 +79,15 @@ Formats (selectable with `--format`):
 | Option | Meaning |
 |---|---|
 | `--octave N` | Override the encoding's octave field. |
-| `--layout C\|F` | Re-express the chord in the other layout (same notes). |
+| `--layout C\|F` | Re-express the chord in the other key layout (same notes). |
 | `--format png\|svg` | Output format (default `png`). |
+| `--visual traditional\|qadro` | Visual layout of the image (default `qadro`). |
 | `--out PATH` | Output file (default `<symbol>.<ext>` in the current directory). |
 
 Examples:
 
-    qord render Cmaj                          # Cmaj.png in the current directory
-    qord render F#m --octave -1 --format svg --out fsm.svg
+    qord render Cmaj                          # qadro PNG of middle-register C major
+    qord render F#m --octave -1 --visual traditional --format svg --out fsm.svg
     qord show Cmaj                            # Cmaj: 1,0,10001001 (C4 E4 G4)
     qord add Csus2 1,0,10100001
     qord list

@@ -138,6 +138,7 @@ public sealed class ChordLibrary
             ("m", new[] { 0, 3, 7 }),
             ("7", new[] { 0, 4, 7, 10 }),
             ("m7", new[] { 0, 3, 7, 10 }),
+            ("m6", new[] { 0, 3, 7, 9 }),
             ("maj7", new[] { 0, 4, 7, 11 }),
             ("dim", new[] { 0, 3, 6 }),
             ("aug", new[] { 0, 4, 8 }),

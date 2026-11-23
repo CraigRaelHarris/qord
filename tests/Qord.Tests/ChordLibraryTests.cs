@@ -29,6 +29,8 @@ public class ChordLibraryTests : IDisposable
         Assert.Equal("0,0,010001001", fsharp!.ToString());
         Assert.True(library.TryGet("F#m", out ChordEncoding? fsharpMinor));
         Assert.Equal("0,0,010010001", fsharpMinor!.ToString());
+        Assert.True(library.TryGet("Am6", out ChordEncoding? am6));
+        Assert.Equal("0,0,00001001000101", am6!.ToString());
     }
 
     [Fact]
@@ -115,6 +117,6 @@ public class ChordLibraryTests : IDisposable
         IReadOnlyList<ChordEntry> entries = library.List();
         Assert.Contains(entries, entry => entry.Symbol == "Cmaj" && !entry.IsUserDefined);
         Assert.Contains(entries, entry => entry.Symbol == "Xcustom" && entry.IsUserDefined);
-        Assert.True(entries.Count >= 132);
+        Assert.True(entries.Count >= 144);
     }
 }
