@@ -107,3 +107,12 @@ The solution and projects target .NET 8.
     src/Qord       the library (encodings, chord library, PNG/SVG rendering)
     src/Qord.Cli   the qord command-line tool
     tests/Qord.Tests
+
+## Qadro examples
+![F#](images/F%23.png)  F#
+![A#m](images/A%23m.png) A#m
+![B](images/B.png) B
+![C#](images/C%23.png) C#
+![D#m](images/D%23m.png) D#m
+![G#](images/G%23.png) G#
+![F#](images/F%23_trad.png)  F# traditional
